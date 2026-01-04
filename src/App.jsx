@@ -8,28 +8,39 @@ import PhysicalAnalysis from "./components/PhysicalAnalysis";
 import FunctionalAnalysis from "./components/FunctionalAnalysis";
 import QualityOfLife from "./components/QualityOfLife";
 import ImageGallery from "./components/ImageGallery";
-import Container from "./components/Container";
+import Container from "./components/ui/Container";
 import Accesses from "./components/Accesses";
 import Summary from "./components/Summary";
 import SideBar from "./components/SideBar";
 import Priorities from "./components/Priorities";
+import Location from "./components/location";
+import Comments from "./components/Comments";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import MobileMenu from "./components/MobailMenu";
 
 function App() {
   return (
-    <div
-      className="relative font-modam  text-base  text-gray-800 font-medium"
-    >
-      <div className="blur-sm bg-cover fixed inset-0 -z-10 bg-center"
-      style={{ backgroundImage: "url('./images/Kooyemoalem.jpg')" }}>
+    <div className="relative font-modam  text-base  text-gray-800 font-medium">
+      <div
+        className="blur-sm bg-cover fixed inset-0 -z-10 bg-center"
+        style={{ backgroundImage: "url('./images/bg.jpg')" }}
+      ></div>
 
-    </div>
-      <SideBar />
-      <div className="pl-[8-px] pr-[8px] pb-5  md:pr-60 md:pl-5 ">
+      <div className="pl-[8px] pr-[8px] pb-5  md:pr-60 md:pl-3 ">
         {" "}
         {/* حاشیه راست برای نوبار */}
         <Container>
+          <div className="px-0 flex justify-center">
+            <SideBar />
+          <Header />
+           <MobileMenu/>
+          </div>
           <div id="identify">
             <Identify />
+          </div>
+          <div id="location">
+            <Location />
           </div>
           <div id="history">
             <History />
@@ -52,8 +63,17 @@ function App() {
           <div id="summary">
             <Summary />
           </div>
-          <div id="images">{/* <ImageGallery /> */}</div>
+          <div id="comments">
+            <Comments />
+          </div>
+          {/* <div id="images">
+            <ImageGallery />
+          </div> */}
         </Container>
+      </div>
+      <div className="md:pr-60 md:pl-5">
+        
+        <Footer />
       </div>
     </div>
   );

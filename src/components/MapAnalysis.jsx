@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Button } from "./Button";
+import { Button } from "../components/ui/Button";
 const isMobile = window.innerWidth < 768;
 const isLaptop = window.innerWidth < 1000;
 
 const MapAnalysis = () => {
   const mapRef = useRef(null);
-
+  const [showHelp, setShowHelp] = useState(false);
   const baseLayerRef = useRef(null);
   const [map, setMap] = useState(null);
   const [geoData, setGeoData] = useState(null);
@@ -114,14 +114,17 @@ const MapAnalysis = () => {
       zoom: 14,
       minZoom: 16,
       maxZoom: 18,
+      zoomControl: false,
+      scrollWheelZoom: true,
     });
+
     // اجرای خودکار در بار اول
     const base = baseMaps["osm"]();
     base.addTo(initMap);
     baseLayerRef.current = base;
     setMap(initMap);
 
-    fetch("./data/m17_FeaturesToJSON.geojson")
+    fetch("./data/M17_ss.geojson")
       .then((res) => res.json())
       .then((data) => {
         setGeoData(data);
@@ -175,8 +178,8 @@ const MapAnalysis = () => {
       grades.forEach(([key, label]) => {
         const color = getColor(type, parseInt(key));
         div.innerHTML += `
-        <div class="flex items-center gap-2 text-xs">
-          <div style="width:20px;height:12px;background:${color}"></div>
+        <div class="flex items-center gap-2 4px text-xs">
+          <div style="width:20px;height:20px;background:${color};border-radius: 5px;"></div>
           <span>${label}</span>
         </div>
       `;
@@ -208,7 +211,7 @@ const MapAnalysis = () => {
         const p = feature.properties;
         const qdmtLabel = legendsData.qdmt.values[parseInt(p.qdmt)] || "-";
         const namaLabel = legendsData.nama.values[parseInt(p.nama)] || "-";
-
+       
         let tbqeLabel = "-";
         if (p.tdad_tbqe !== undefined && p.tdad_tbqe !== null) {
           const tbqeVal = parseInt(p.tdad_tbqe);
@@ -217,11 +220,20 @@ const MapAnalysis = () => {
           else tbqeLabel = legendsData.tdad_tbqe.values[tbqeVal] || "-";
         }
 
-        layer.bindPopup(`
+        layer.bindPopup(
+          `<div style="text-align:right">
+          
         <b>طبقات:</b> ${tbqeLabel}<br>
         <b>قدمت:</b> ${qdmtLabel}<br>
         <b>نما:</b> ${namaLabel}
-      `);
+        </div>
+      `,
+          {
+            permanent: false,
+            direction: "top",
+            className: "landuse-label ",
+          }
+        );
       },
     });
 
@@ -255,6 +267,27 @@ const MapAnalysis = () => {
             width: "100%",
           }}
         ></div>
+        {/* دکمه راهنما + متن کمکی */}
+        <div className="absolute top-4 left-4 z-[1000] pointer-events-auto">
+          <div className="relative inline-block">
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="bg-[var(--sidebar)] px-4 py-2 rounded-full shadow-sm text-white text-base hover:bg-[var(--sidebar)] transition-all"
+            >
+              ؟
+            </button>
+
+            {showHelp && (
+              <div className="absolute top-full mt-2 left-0 bg-white/50 backdrop-blur-sm text-gray-800 shadow-lg border border-gray-300 rounded-md p-1 w-56 z-[2000]">
+                <div className="font-bold mb-2">راهنمای استفاده از نقشه:</div>
+                <ul className="list-disc pr-5  text-[14px] space-y-1 text-right">
+                  <li>روی هر قطعه زمین کلیک کنید تا اطلاعات نمایش داده شود.</li>
+                  <li>نقشه قابل حرکت و زوم است.</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
 
         <div
           style={{
@@ -322,7 +355,18 @@ const MapAnalysis = () => {
           margin-left: 6px;
           vertical-align: middle;
           border: 1px solid #999;
+          border-radius: 5px;
         }
+        .landuse-label {
+          font-family: 'Modam' !important;
+          font-weight: bold;
+          color: #222;
+
+          border-radius: 5px;
+ 
+          font-size: 14px;
+          text-align: center;
+               }
          
       `}</style>
     </div>
